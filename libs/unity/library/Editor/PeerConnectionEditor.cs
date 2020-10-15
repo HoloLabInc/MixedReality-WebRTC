@@ -71,8 +71,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity.Editor
         private void Awake()
         {
             // Load sprites for transceiver list control
-            // var objects = AssetDatabase.LoadAllAssetsAtPath("Packages/com.microsoft.mixedreality.webrtc/Editor/Icons/editor_icons.png");
-            var objects = AssetDatabase.LoadAllAssetsAtPath("Assets/MixedReality-WebRTC/Editor/Icons/editor_icons.png");
+            var objects = AssetDatabase.LoadAllAssetsAtPath("Packages/com.microsoft.mixedreality.webrtc/Editor/Icons/editor_icons.png");
             foreach (var obj in objects)
             {
                 if (obj is Sprite sprite)
