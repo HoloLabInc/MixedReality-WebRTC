@@ -236,7 +236,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         /// List of transceiver media lines and their associated media sender/receiver components.
         /// </summary>
         [SerializeField]
-        private List<MediaLine> _mediaLines = new List<MediaLine>();
+        protected List<MediaLine> _mediaLines = new List<MediaLine>();
 
         // Indicates if Awake has been called. Used by media lines to figure out whether to
         // invoke callbacks or not.
