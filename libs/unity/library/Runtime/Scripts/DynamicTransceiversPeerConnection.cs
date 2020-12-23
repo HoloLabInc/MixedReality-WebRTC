@@ -16,12 +16,17 @@ namespace Microsoft.MixedReality.WebRTC.Unity
         //private MediaLine selfMedia;
 
         [SerializeField]
-        private MediaTrackSource selfVideoTrackSource;
+        private MediaTrackSource selfVideoTrackSource = null;
 
         [SerializeField]
-        private GameObject remoteMediaPrefab;
+        private MediaTrackSource selfAudioTrackSource = null;
+
+        [SerializeField]
+        private GameObject remoteMediaPrefab = null;
 
         public event Action<string, GameObject> OnRemoteMediaCreated;
+
+        private Dictionary<string, GameObject> remoteMediaDictionary = new Dictionary<string, GameObject>();
 
 
         public new async Task HandleConnectionMessageAsync(Microsoft.MixedReality.WebRTC.SdpMessage message)
@@ -101,23 +106,36 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
                     if (string.IsNullOrEmpty(streamId))
                     {
-                        if (tr.MediaKind == MediaKind.Video)
+                        switch (tr.MediaKind)
                         {
-                            mediaLine.Source = selfVideoTrackSource;
-                            Debug.Log("set source");
+                            case MediaKind.Video:
+                                mediaLine.Source = selfVideoTrackSource;
+                                break;
+                            case MediaKind.Audio:
+                                mediaLine.Source = selfAudioTrackSource;
+                                break;
                         }
                     }
                     else
                     {
-                        if (tr.MediaKind == MediaKind.Video)
+                        if (!remoteMediaDictionary.TryGetValue(streamId, out var remoteMedia))
                         {
-                            var remoteMedia = Instantiate(remoteMediaPrefab);
-                            var remoteVideoReceiver = remoteMedia.GetComponentInChildren<VideoReceiver>();
-                            mediaLine.Receiver = remoteVideoReceiver;
-                            Debug.Log("set receiver");
+                            remoteMedia = Instantiate(remoteMediaPrefab);
+                            remoteMediaDictionary[streamId] = remoteMedia;
                             OnRemoteMediaCreated?.Invoke(streamId, remoteMedia);
                         }
 
+                        switch (tr.MediaKind)
+                        {
+                            case MediaKind.Video:
+                                var remoteVideoReceiver = remoteMedia.GetComponentInChildren<VideoReceiver>();
+                                mediaLine.Receiver = remoteVideoReceiver;
+                                break;
+                            case MediaKind.Audio:
+                                var remoteAudioReceiver = remoteMedia.GetComponentInChildren<AudioReceiver>();
+                                mediaLine.Receiver = remoteAudioReceiver;
+                                break;
+                        }
                     }
 
                     mediaLine.PairTransceiver(tr);
