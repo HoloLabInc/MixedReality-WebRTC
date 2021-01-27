@@ -76,6 +76,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // user to request permission. This will succeed only if the user approves it.
             try
             {
+                /*
                 if (UnityEngine.WSA.Application.RunningOnUIThread())
                 {
                     await RequestAccessAsync();
@@ -84,6 +85,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     UnityEngine.WSA.Application.InvokeOnUIThread(() => RequestAccessAsync(), waitUntilDone: true);
                 }
+                */
+                await RequestAccessAsync();
             }
             catch (Exception ex)
             {

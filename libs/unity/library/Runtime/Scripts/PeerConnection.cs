@@ -285,6 +285,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             // Ensure Android binding is initialized before accessing the native implementation
             Android.Initialize();
 
+            return RequestAccessAndInitAsync(token);
+            /*
 #if UNITY_WSA && !UNITY_EDITOR
             if (UnityEngine.WSA.Application.RunningOnUIThread())
 #endif
@@ -298,6 +300,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 return Task.CompletedTask;
             }
 #endif
+            */
         }
 
         /// <summary>

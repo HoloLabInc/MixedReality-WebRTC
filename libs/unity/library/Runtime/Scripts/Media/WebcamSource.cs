@@ -184,6 +184,7 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 // some other place, and in case a future version of Unity decided to change that assumption,
                 // but currently OnEnable() is always invoked from the main Unity app thread so here the first
                 // branch is never taken.
+                /*
                 if (UnityEngine.WSA.Application.RunningOnUIThread())
                 {
                     await RequestAccessAsync();
@@ -192,6 +193,8 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     UnityEngine.WSA.Application.InvokeOnUIThread(() => RequestAccessAsync(), waitUntilDone: true);
                 }
+                */
+                await RequestAccessAsync();
             }
             catch (Exception ex)
             {
