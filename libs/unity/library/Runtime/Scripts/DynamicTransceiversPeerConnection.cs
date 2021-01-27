@@ -28,6 +28,29 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         private Dictionary<string, GameObject> remoteMediaDictionary = new Dictionary<string, GameObject>();
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            OnShutdown.AddListener(PeerConnection_OnShutdown);
+        }
+
+        private void PeerConnection_OnShutdown()
+        {
+            foreach (var media in remoteMediaDictionary.Values)
+            {
+                Destroy(media);
+            }
+            remoteMediaDictionary.Clear();
+
+            foreach (var mediaLine in _mediaLines)
+            {
+                mediaLine.UnpairTransceiver();
+                mediaLine.OnDestroy();
+            }
+
+            _mediaLines.Clear();
+        }
 
         public new async Task HandleConnectionMessageAsync(Microsoft.MixedReality.WebRTC.SdpMessage message)
         {
