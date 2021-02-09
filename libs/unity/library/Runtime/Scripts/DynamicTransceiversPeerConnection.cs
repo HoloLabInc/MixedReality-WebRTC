@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine;
+using System.Threading;
 
 // namespace HoloLab.WebRtcModule
 namespace Microsoft.MixedReality.WebRTC.Unity
@@ -23,6 +24,16 @@ namespace Microsoft.MixedReality.WebRTC.Unity
 
         [SerializeField]
         private GameObject remoteMediaPrefab = null;
+
+        /// <summary>
+        /// 自分のビデオ送信がアクティブかどうか
+        /// </summary>
+        public bool LocalVideoEnabled => selfVideoTrackSource.gameObject.activeSelf;
+
+        /// <summary>
+        /// 自分のマイク送信がアクティブかどうか
+        /// </summary>
+        public bool LocalAudioEnabled => selfAudioTrackSource.gameObject.activeSelf;
 
         public event Action<string, GameObject> OnRemoteMediaCreated;
 
@@ -50,6 +61,57 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             }
 
             _mediaLines.Clear();
+        }
+
+        private CancellationTokenSource tokenSource;
+
+        public async Task SetLocalVideoEnabled(bool enabled)
+        {
+            tokenSource?.Cancel();
+            tokenSource?.Dispose();
+
+            tokenSource = new CancellationTokenSource();
+            await SetLocalVideoTrackSourceActive(enabled, tokenSource.Token);
+        }
+
+        private async Task SetLocalVideoTrackSourceActive(bool enabled, CancellationToken token)
+        {
+            if (!enabled)
+            {
+                // 相手に送信しているカメラ映像が黒い画面になるよう、
+                // localVideoTrack をオフにして少し待ってから webcamSource を非アクティブにする
+
+                for (var i = 0; i < 10; i++)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    foreach (var localVideoTrack in Peer.LocalVideoTracks)
+                    {
+                        localVideoTrack.Enabled = false;
+                    }
+                    await Task.Delay(200);
+                }
+            }
+
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                // webcamSource が非アクティブになる前にカメラの有効化が呼ばれてしまったときのために、
+                // 一度非アクティブにしてからアクティブにする
+                // これを行わないとカメラ映像が送れなくなる
+                selfVideoTrackSource.gameObject.SetActive(false);
+                selfVideoTrackSource.gameObject.SetActive(true);
+            }
+            else
+            {
+                selfVideoTrackSource.gameObject.SetActive(false);
+            }
         }
 
         public new async Task HandleConnectionMessageAsync(Microsoft.MixedReality.WebRTC.SdpMessage message)
