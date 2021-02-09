@@ -74,6 +74,12 @@ namespace Microsoft.MixedReality.WebRTC.Unity
             await SetLocalVideoTrackSourceActive(enabled, tokenSource.Token);
         }
 
+        public Task SetLocalAudioEnabled(bool enabled)
+        {
+            selfAudioTrackSource.gameObject.SetActive(enabled);
+            return Task.CompletedTask;
+        }
+
         private async Task SetLocalVideoTrackSourceActive(bool enabled, CancellationToken token)
         {
             if (!enabled)
