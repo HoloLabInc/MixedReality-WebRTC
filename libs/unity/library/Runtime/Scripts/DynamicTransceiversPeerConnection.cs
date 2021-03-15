@@ -155,29 +155,21 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                 {
                     var tr = transceivers[i];
                     var desDir = tr.DesiredDirection;
+
                     /*
-                    Debug.Log(desDir);
-                    Debug.Log(tr.NegotiatedDirection);
-                    Debug.Log(tr.MediaKind);
-                    */
-
                     Debug.Log($"mecount: {_mediaLines.Count}, {i}");
-
                     foreach (var id in tr.StreamIDs)
                     {
                         Debug.Log(id);
                     }
-
                     Debug.Log($"before: {tr.NegotiatedDirection}, {tr.DesiredDirection}, {Transceiver.HasRecv(desDir)}, {Transceiver.HasSend(desDir)}");
-
-
+                    */
 
                     // 既存の Media Line を検索
                     var mediaLine = _mediaLines.FirstOrDefault(x => x.Transceiver == tr);
 
                     if (mediaLine != null)
                     {
-                        Debug.Log("medialine found");
                         try
                         {
                             mediaLine.UpdateAfterSdpReceived();
@@ -189,7 +181,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                         }
                         continue;
                     }
-
 
                     mediaLine = AddMediaLine(tr.MediaKind);
 
@@ -239,10 +230,6 @@ namespace Microsoft.MixedReality.WebRTC.Unity
                     {
                         Debug.LogError(ex);
                     }
-
-
-                    Debug.Log($"after: {tr.NegotiatedDirection}, {tr.DesiredDirection}, {Transceiver.HasRecv(desDir)}, {Transceiver.HasSend(desDir)}");
-
                 }
             }
         }
